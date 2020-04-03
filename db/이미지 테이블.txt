@@ -1,0 +1,6 @@
+create database pytest;
+use pytest;
+create table images(
+num int auto_increment primary key,
+data blob
+);

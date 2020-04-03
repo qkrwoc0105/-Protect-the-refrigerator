@@ -1,0 +1,8 @@
+create database pytest;
+use pytest;
+create table test(
+	name varchar(50),
+	age int
+);
+insert into test values('박재철', 25);
+insert into test values('박재균', 28);

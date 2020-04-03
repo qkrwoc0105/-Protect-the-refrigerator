@@ -1,0 +1,25 @@
+
+
+create table recommendedNutrientIntake(
+	age int,
+	gender char(1),
+	calorie int,
+	carbohydrate float,
+	dietaryFiber float,
+	protein float,
+	fat float,
+	cholesterol float
+	calcium float,
+	sodium float,
+	vitaminA float,
+	vitaminB float,
+	vitaminC float,
+	vitaminD float,
+	vitaminE float,
+	CONSTRAINT PK_recommendedNutrientIntake PRIMARY KEY (age, gender),
+	CONSTRAINT CHK_recommendedNutrientIntake_gender CHECK ('gender' IN ('M','F'))
+);
+
+insert into recommendedNutrientIntake values('', '',  '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',);
+
+commit;
