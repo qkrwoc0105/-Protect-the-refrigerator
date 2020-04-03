@@ -54,7 +54,7 @@ Rasberry Pi 카메라로 냉장고 내부의 사진을 찍어 Pytorch와 Yolo v3
 
 ###### 2.  프로젝트 구조
 
-![image-20200331104251792](C:\Users\sandy\AppData\Roaming\Typora\typora-user-images\image-20200331104251792.png)
+![project](https://user-images.githubusercontent.com/55024780/78323164-f811e080-75ab-11ea-920d-ec21556bd113.png)
 
 ***
 
