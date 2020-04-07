@@ -61,15 +61,13 @@ create table photo(
 	data blob,
 	analyzedData blob,
 	cameraID varchar(50) not null,
-	photoDate date,
-	photoTime time,
 	CONSTRAINT PK_photo PRIMARY KEY (photoID),
 	CONSTRAINT FK_photo_cameraID FOREIGN KEY (cameraID) REFERENCES camera(cameraID)
 );
 
 create table food(
 	foodName varchar(50) not null,
-	shelfLife date,
+	shelfLife varchar(50),
 	calorie int,
 	carbohydrate float,
 	sugar float,
@@ -92,9 +90,9 @@ create table food(
 create table photographedFood(
 	photoID varchar(50) not null,
 	foodName varchar(50) not null,
-	shelfLife date,
-	inday date,
-	outday date,
+	shelfLife varchar(50),
+	inday varchar(50),
+	outday varchar(50),
 	CONSTRAINT PK_photographedFood PRIMARY KEY (photoID, foodName),
 	CONSTRAINT FK_photographedFood_photoID FOREIGN KEY (photoID) REFERENCES photo(photoID),
 	CONSTRAINT FK_photographedFood_foodName FOREIGN KEY (foodName) REFERENCES food(foodName)
@@ -102,6 +100,7 @@ create table photographedFood(
 
 create table recipe(
 	recipeName varchar(50) not null,
+	data blob,
 	process varchar(50),
 	recipeTime time,
 	difficulty varchar(50),

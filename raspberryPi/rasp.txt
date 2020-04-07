@@ -1,0 +1,38 @@
+파이토치 yolo inception 라즈베리파이에 깔기
+
+라즈베리파이 와이파이 자동접속
+https://webnautes.tistory.com/903
+
+라즈베리파이 파이토치 설치
+https://medium.com/secure-and-private-ai-writing-challenge/a-step-by-step-guide-to-installing-pytorch-in-raspberry-pi-a1491bb80531
+파이토치 wheel 파일
+https://github.com/pytorch/pytorch/issues/23233
+
+openCV 설치
+https://make.e4ds.com/make/learn_guide_view.asp?idx=116
+
+cmake -D CMAKE_BUILD_TYPE=RELEASE \
+-D CMAKE_INSTALL_PREFIX=/usr/local \
+-D WITH_TBB=OFF \
+-D WITH_IPP=OFF \
+-D WITH_1394=OFF \
+-D BUILD_WITH_DEBUG_INFO=OFF \
+-D BUILD_DOCS=OFF \
+-D INSTALL_C_EXAMPLES=ON \
+-D INSTALL_PYTHON_EXAMPLES=ON \
+-D BUILD_EXAMPLES=OFF \
+-D BUILD_TESTS=OFF \
+-D BUILD_PERF_TESTS=OFF \
+-D WITH_QT=OFF \
+-D WITH_GTK=ON \
+-D WITH_OPENGL=ON \
+-D OPENCV_EXTRA_MODULES_PATH=../../opencv_contrib-4.0.1/modules \
+-D WITH_V4L=ON  \
+-D WITH_FFMPEG=ON \
+-D WITH_XINE=ON \
+-D BUILD_NEW_PYTHON_SUPPORT=ON \
+-D OPENCV_GENERATE_PKGCONFIG=ON ../
+
+
+yolo v3 설치
+https://j-remind.tistory.com/53?category=693866

@@ -1,0 +1,3 @@
+C:\pytorch-yolo-v3-master\data\plate\images\bread.jpg
+C:\pytorch-yolo-v3-master\data\plate\images\tomato.jpg
+C:\pytorch-yolo-v3-master\data\plate\images\eagle.jpg

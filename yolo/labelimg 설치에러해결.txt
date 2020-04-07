@@ -1,0 +1,9 @@
+conda install pyqt=5
+pyrcc5 -o resources.py resources.qrc
+python labelImg.py
+
+ModuleNotFoundError: No module named 'libs.resources'
+pyrcc5 -o libs/resources.py resources.qrc
+
+ModuleNotFoundError: No module named 'lxml'
+pip install lxml

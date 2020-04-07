@@ -1,0 +1,23 @@
+putty
+sudo passwd
+1234
+sudo raspi-config
+ 7. Advanced Options -> 4. Expand Filesystem 선택
+ 5.Interfacing Options -> camera, ssh, vnc 선택해서 enabled
+reboot 이후 vnc에서 
+
+vnc
+sudo apt-get update
+sudo apt-get upgrade
+
+sudo apt-get install ibus
+sudo apt-get install ibus-hangul
+sudo apt-get install ttf-unfonts-core
+sudo apt install fonts-unfonts-core
+
+sudo apt install python3-pymysql
+sudo apt install python3-pillow
+sudo apt install python3-pandas
+sudo apt install python3-sqlalchemy
+sudo pip install python3-rpi.gpio
+sudo pip install python3-picamera
