@@ -16,6 +16,11 @@ import random
 import pickle as pkl
 import itertools
 
+from PIL import ImageFont, ImageDraw, Image
+from datetime import datetime, timedelta
+import pymysql
+import socket 
+
 class test_net(nn.Module):
     def __init__(self, num_layers, input_size):
         super(test_net, self).__init__()
@@ -73,6 +78,10 @@ def arg_parse():
                         default = "416", type = str)
     parser.add_argument("--scales", dest = "scales", help = "Scales to use for detection",
                         default = "1,2,3", type = str)
+    parser.add_argument("--photoID", dest = "photoID", help = "analyze photoID",
+                        default = "0", type = str)
+    parser.add_argument("--cameraID", dest = "cameraID", help = "photographed cameraID",
+                        default = "0", type = str)
     
     return parser.parse_args()
 
@@ -110,7 +119,7 @@ if __name__ ==  '__main__':
     CUDA = torch.cuda.is_available()
 
     num_classes = 2
-    classes = load_classes('data/plate/plate.names') 
+    classes = load_classes('data/plate/plate.names')
 
     #Set up the neural network
     print("Loading network.....")
@@ -281,23 +290,124 @@ if __name__ ==  '__main__':
     
     draw = time.time()
 
-
-    def write(x, batches, results):
+    def write(x, batches, results, pre):
+        red_color = (0,0,255)
+        orange_color = (0,194,255)
+        green_color = (0,255,0)
+        
         c1 = tuple(x[1:3].int())
         c2 = tuple(x[3:5].int())
         img = results[int(x[0])]
         cls = int(x[-1])
         label = "{0}".format(classes[cls])
-        color = random.choice(colors)
-        cv2.rectangle(img, c1, c2,color, 1)
-        t_size = cv2.getTextSize(label, cv2.FONT_HERSHEY_PLAIN, 1 , 1)[0]
+        
+        if not hasattr(write, "counter"): write.counter = 0
+        write.counter = write.counter + 1
+        
+        x1 = int(c1[0].numpy())
+        y1 = int(c1[1].numpy())
+        x2 = int(c2[0].numpy())
+        y2 = int(c2[1].numpy())
+        
+        conn = pymysql.connect(host='13.125.102.154', user='hello', password='Csedbadmin!1', db='pytest')
+        curs = conn.cursor()
+        
+        now = args.photoID
+        now_split = now.split('_')
+        now_time = datetime(int(now_split[0]), int(now_split[1]), int(now_split[2]), int(now_split[3]), int(now_split[4]), int(now_split[5]))
+        
+        sql = "select * from photographedFood where photoID = %s"
+        curs.execute(sql, pre)
+        rows = curs.fetchall()
+        
+        #row 0:photoId 1:count 2:foodName 3:shelfLife 4:inday 5:x1 6:x2 7:y1 8:y2
+        check = True
+        shelfLife, diff = 0, 0
+        for row in rows : #이전 사진과 같은 좌표에 식품이 있는지 확인
+            if (x1 == row[5]) and (x2 == row[6]) and (y1 == row[7]) and (y2 == row[8]) :
+                sql = "insert into photographedFood(photoID, count, foodName, shelfLife, inday, x1, x2, y1, y2) values (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
+                curs.execute(sql, (now, write.counter, row[2], row[3], row[4], row[5], row[6], row[7], row[8]))
+                
+                shelfLife = row[3]
+                inday_split = row[4].split('_')
+                in_time = datetime(int(inday_split[0]), int(inday_split[1]), int(inday_split[2]), int(inday_split[3]), int(inday_split[4]), int(inday_split[5]))
+                diff = (now_time - in_time).days
+                check = False
+                break;            
+                
+        #같은 좌표에 식품이 없는 경우
+        if check == True:
+            sql = "select shelfLife from food where foodName = %s"
+            curs.execute(sql, label)
+            rows = curs.fetchall()
+    
+            shelfLife = rows[0][0]
+            
+            sql = "insert into photographedFood(photoID, count, foodName, shelfLife, inday, x1, x2, y1, y2) values (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
+            curs.execute(sql, (now, write.counter, label, shelfLife, now, x1, x2, y1, y2))
+
+        conn.commit()
+        conn.close()
+
+        #유통기한에 따른 색 변경
+        if diff > shelfLife :
+            color = red_color
+        elif (diff >= shelfLife - 3) or (shelfLife < 3) :
+            color = orange_color
+        else :
+            color = green_color
+        
+        cv2.rectangle(img, c1, c2,color, 2)
+        t_size = cv2.getTextSize(str(write.counter), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1 , 1)[0]        
         c2 = c1[0] + t_size[0] + 3, c1[1] + t_size[1] + 4
         cv2.rectangle(img, c1, c2,color, -1)
-        cv2.putText(img, label, (c1[0], c1[1] + t_size[1] + 4), cv2.FONT_HERSHEY_PLAIN, 1, [225,255,255], 1)
+        cv2.putText(img, str(write.counter), (c1[0], c1[1] + t_size[1] + 4), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1, [0,0,0], 1)
+        
         return img
     
-            
-    list(map(lambda x: write(x, im_batches, orig_ims), output))
+    #해당하는 카메라로 찍은 가장 최근 사진
+    conn = pymysql.connect(host='13.125.102.154', user='hello', password='Csedbadmin!1', db='pytest')
+    curs = conn.cursor()
+    
+    sql = "select photoID from photo where cameraID=%s"
+    curs.execute(sql, args.cameraID)
+    rows = curs.fetchall()
+    pre = ''
+    if len(rows) != 0:
+        pre = rows[0][0];       
+        pre_split = pre.split('_')            
+        for row in rows :    
+            row_split = row[0].split('_')
+            for i in range(0, len(pre_split)) :
+                if(int(pre_split[i]) < int(row_split[i])) :
+                    pre = row[0]
+                    pre_split = pre.split('_')
+                    break;
+
+    list(map(lambda x: write(x, im_batches, orig_ims, pre), output))
+    
+    #가장 최근 사진과 지금 사진을 비교하여 없어진 식품을 eatenFood테이블로
+    if pre != '':
+        sql = "select * from photographedFood where photoID = %s"
+        curs.execute(sql, pre)
+        pre_rows = curs.fetchall()
+        
+        sql = "select * from photographedFood where photoID = %s"
+        curs.execute(sql, args.photoID)
+        now_rows = curs.fetchall()
+        
+        for pre_row in pre_rows :
+            check = False
+            for now_row in now_rows :
+                if (pre_row[5] == now_row[5]) and (pre_row[6] == now_row[6]) and (pre_row[7] == now_row[7]) and (pre_row[8] == now_row[8]) :
+                    check = True
+                    break;
+            if check == False :
+                sql = "insert into eatenFood(photoID, foodName) values (%s, %s)"
+                curs.execute(sql, (args.photoID, pre_row[2]))
+                conn.commit()
+        
+    conn.close()
       
     det_names = pd.Series(imlist).apply(lambda x: "{}/det_{}".format(args.det,x.split("/")[-1]))
     
