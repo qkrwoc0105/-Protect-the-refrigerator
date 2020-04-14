@@ -1,0 +1,20 @@
+pin	board	선
+2	4	빨
+6	6	검
+24	12	초
+
+import RPi.GPIO as g
+import time
+
+g.setmode(g.BCM)
+KEY = 24;
+g.setup(KEY, g.IN)
+
+try:
+    while 1:
+        time.sleep(1)
+        print(g.input(KEY))
+
+except KeyboardInterrupt:
+    pass;
+g.cleanup()

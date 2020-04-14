@@ -1,0 +1,105 @@
+photo, photographedFood테이블 제외 예시 하나씩은 넣어놈
+food는 토마토, 슬라이스 치즈, 우유, 계란
+	구글에 검색 시 나오는 usda 기준 100g
+	https://fdc.nal.usda.gov/fdc-app.html#/?query=ndbNumber:11529
+	(토마토 유통기한 없어서 임의로 7일, 치즈는 가공치즈)
+	단위는 usda 참조
+recipe는 만개의 레시피 참조, 영양소는 usda 기준 100g, 시간은 분단위
+	조리 과정 $로 split 그리고 1000byte로 늘림
+	https://www.10000recipe.com/index.html
+ingredients 에서 food 테이블에 없는 재료나 소스를 위해 food외래키 삭제
+	계량 속성 추가
+recommendedNutrientIntake 0세는 0~5개월 기준, 5세 까지는 남녀 같음
+	탄수화물, 지방은 권장 섭취량은 없다. 근데 식이섬유는 있다. 일단 식이섬유만 씀
+	권장 섭취량, 충분 섭취량 둘 다 있으면 권장 섭취량
+	둘 다 없으면 0, 둘 중 하나만 있으면 있는 것으로 적음
+	연령 1~2인 경우 1이라고 써 있으며
+	연령 3~5인 경우 3이라고 써 있음
+	연령 75세 이상은 75 
+	임신부, 수유부 제외
+	나트륨 mg으로 바꿈
+excludedFood 에서 위의 이유로 food 외래키 삭제
+mysql CHECK 작동 안한다고 하여 제약조건들 삭제
+
+
+
+insert into memberInfo values('cjfwoqkr0105@naver.com', 'qwer1234', '19960105', 'M', '1', '1', NULL, NULL, NULL, NULL, NULL, '1', '1', '1', NULL);
+
+insert into refrigerator values('applemango', 'applemango!1', '졸프용 냉장고', '한성대');
+
+insert into possession values('cjfwoqkr0105@naver.com', 'applemango');
+
+insert into camera values('camera1', 'applemango');
+
+insert into food values('토마토', '7', '18', '3.89', '2.63', '1.2', '0.88', '0.2', '0.05', '0', '0', '10', '5', '42', '0.08', '13.7', '0', '0.54');
+insert into food values('슬라이스 치즈', '70', '215', '16', '8', '0.2', '16', '10', '6', '0', '35', '418', '1705', '628', '0', '0.4', '0', '0');
+insert into food values('우유', '14', '42', '5', '5', '0', '3.4', '1', '0.6', '0', '5', '125', '44', '47', '0', '0', '1', '0');
+insert into food values('달걀', '25', '155', '1.1', '1.1', '0', '13', '11', '3.3', '0', '373', '50', '124', '520', '0.1', '0', '87', '0');
+
+insert into recipe values('베이컨 토마토 샌드위치', '1. 기름없는 팬에 베이컨을 약불에서 바삭하게 구워주세요.$ 2. 팬에 베이컨 기름을 버리지 말고 계란프라이를 해주세요. 후추로 약간 간을 해주세요.$ 3.양상추는 깨끗하게 씻어서 빵크기에 맞게 손으로 뜯어 물기 제거까지 해주세요. 토마토는 슬라이스 해주세요.$ 4. 식빵은 기름없이 팬에 구워주세요.$ 5. 식빵 양 쪽에 머스터드로 소스를 발라주세요.$ 6. 빵 위에 양상추, 토마토, 계란프라이, 베이컨, 치즈를 올려주세요.', '30분', 'easy', '207', '21.2', '3.43', '1.6', '7.46', '10.28', '2.384', '0', '14', '49', '531', '21', '0.26', '6', '0.1', '0.58', '');
+insert into recipe values('몬테크리스토', '1. 식빵테두리를 잘라주세요.$ 2. 식빵 한 장 놓고 그 위에 머스타드를 펴 바르고 그 위에 슬라이스햄, 슬라이스치즈 순으로 올려주세요.$ 3. 다른 식빵 하나에 쨈을 발라서 쨈 바른 부위가 슬라이스치즈 쪽으로 가게 올려주세요.$ 4. 그 위에 또다시 쨈을 바르고 슬라이스치즈와 슬라이스햄을 올려주세요.$ 5. 또 다른 식빵에 머스타드를 펴 바르고 머스타드 바른 쪽을 슬라이스햄 쪽으로 덮어주세요.$ 6. 계란에 소금 한 꼬집 넣고 계란을 잘 풀어주세요.$ 7. 토스트에 계란물을 잘 입혀 주세요.$ 8. 프라이팬에 기름을 두르고 약불에서 골고루 익혀주세요.' ,'15분', 'easy', '241', '26.72', '6.9', '0.9', '11.21', '9.48', '3.45', '0', '56', '129', '716', '172', '0', '0', '0', '0', '');
+insert into recipe values('프렌치 토스트', '1. 그릇에 계란, 소금을 1꼬집 넣어 잘 풀어줍니다.$ 2. 설탕, 우유를 넣어 잘 섞어 줍니다.$ 3. 식빵 3장의 끝부분을 최대한 얇게 잘라줍니다.$ 4. 용기에 자른 식빵을 넣어줍니다.$ 5. 만들어 둔 계란물을 부어 빵이 계란물을 모두 흡수 할 수 있도록 해둡니다.$ 6. 팬에 버터를 녹여줍니다.$ 7. 뚜껑을 덮어 10분간 구워줍니다.$ 8. 뒤집어서 또 10분간 구워줍니다.', '15분', 'easy', '229', '25', '0', '0', '8', '11', '2.7', '0', '116', '100', '479', '503', '0.38', '0.3', '0', '0', '');
+insert into recipe values('토마토 달걀 볶음', '1. 먼저 쪽파는 송송 썰어 고명으로 준비 해 주시고 토마토는 크기에 따라 4~8등분해서 준비할게요.$ 2. 달걀 3개에 우유 두 큰술 정도 넣고 간은 1/2티스푼 정도로 살짝 해 주세요. 잘 섞어서 준비할게요.$ 3. 프라이팬을 중불에서 3분간 예열 후 버터를 반큰술 넣고 녹인다음 토마토를 앞뒤로 살짝 구울게요. 이때 소금으로 약간 간 해 주시면 더욱 좋습니다. 굳이 색이 날 정도로 구우실 필요는 없습니다.$ 4. 이제 풀어 둔 달걀을 넣어줄게요.$ 5. 아주 빠르게 저어 주실 필요는 없지만 천천히 잘 섞어가며 볶듯이 조리 해 주세요. 너무 자주 자주 뒤적거리면 토마토가 다 으깨어져서 요리가 지저분 해 질 수 있으니 주의 해 주세요.$ 6. 마지막으로 후추 약간과 송송 썬 쪽파를 곁들여 주시면 간단한 아침메뉴로 좋은 토마토 달걀 볶음 완성되었습니다.', '10분', 'normal', '117', '2.84', '2.14', '0.5', '7.15', '8.53', '2.22', '0', '186', '51', '225', '105', '0.56', '5.8', '1.2', '1.17', '');
+
+insert into ingredients values('베이컨 토마토 샌드위치', '토마토', '1개');
+insert into ingredients values('베이컨 토마토 샌드위치', '베이컨', '6개');
+insert into ingredients values('베이컨 토마토 샌드위치', '양상추', '적당량');
+insert into ingredients values('베이컨 토마토 샌드위치', '식빵', '4장');
+insert into ingredients values('베이컨 토마토 샌드위치', '달걀', '2개');
+insert into ingredients values('베이컨 토마토 샌드위치', '슬라이스 치즈', '2장');
+insert into ingredients values('베이컨 토마토 샌드위치', '후추', '1꼬집');
+insert into ingredients values('베이컨 토마토 샌드위치', '머스타드', '적당량');
+
+insert into ingredients values('몬테크리스토', '식빵', '6장');
+insert into ingredients values('몬테크리스토', '슬라이스 치즈', '4장');
+insert into ingredients values('몬테크리스토', '슬라이스 햄', '4장');
+insert into ingredients values('몬테크리스토', '달걀', '2개');
+insert into ingredients values('몬테크리스토', '소금', '1꼬집');
+insert into ingredients values('몬테크리스토', '머스타드', '적당량');
+insert into ingredients values('몬테크리스토', '딸기잼', '적당량');
+
+insert into ingredients values('프렌치 토스트', '식빵', '3장');
+insert into ingredients values('프렌치 토스트', '우유', '150ml');
+insert into ingredients values('프렌치 토스트', '버터', '1~2T');
+insert into ingredients values('프렌치 토스트', '계란', '2개');
+insert into ingredients values('프렌치 토스트', '설탕', '4T');
+insert into ingredients values('프렌치 토스트', '소금', '1꼬집');
+
+insert into ingredients values('토마토 달걀 볶음', '토마토', '1개');
+insert into ingredients values('토마토 달걀 볶음', '우유', '1T');
+insert into ingredients values('토마토 달걀 볶음', '소금', '1/2t');
+insert into ingredients values('토마토 달걀 볶음', '쪽파', '1/4뿌리');
+insert into ingredients values('토마토 달걀 볶음', '달걀', '3개');
+insert into ingredients values('토마토 달걀 볶음', '버터', '1/2T');
+insert into ingredients values('토마토 달걀 볶음', '후추', '1/2t');
+
+insert into recommendedNutrientIntake values('0', 'M', '550', '60', '0', '0', '10', '25', '0', '0', '0', '210', '120', '350', '0.4', '35', '5', '3');
+insert into recommendedNutrientIntake values('1', 'M', '1000', '0', '0', '10', '15', '0', '0', '0', '0', '500', '900', '300', '1.5', '35', '5', '5');
+insert into recommendedNutrientIntake values('3', 'M', '1400', '0', '0', '15', '20', '0', '0', '0', '0', '600', '1000', '350', '1.8', '40', '5', '6');
+insert into recommendedNutrientIntake values('6', 'M', '1700', '0', '0', '20', '30', '0', '0', '0', '0', '700', '1200', '450', '2.2', '55', '5', '7');
+insert into recommendedNutrientIntake values('9', 'M', '2100', '0', '0', '20', '40', '0', '0', '0', '0', '800', '1400', '600', '2.8', '70', '5', '9');
+insert into recommendedNutrientIntake values('12', 'M', '2500', '0', '0', '25', '55', '0', '0', '0', '0', '1000', '1500', '750', '3.8', '90', '10', '10');
+insert into recommendedNutrientIntake values('15', 'M', '2700', '0', '0', '25', '65', '0', '0', '0', '0', '900', '1500', '850', '4.2', '105', '10', '11');
+insert into recommendedNutrientIntake values('19', 'M', '2600', '0', '0', '25', '65', '0', '0', '0', '0', '800', '1500', '800', '3.9', '100', '10', '12');
+insert into recommendedNutrientIntake values('30', 'M', '2400', '0', '0', '25', '60', '0', '0', '0', '0', '800', '1500', '750', '3.9', '100', '10', '12');
+insert into recommendedNutrientIntake values('50', 'M', '2200', '0', '0', '25', '60', '0', '0', '0', '0', '750', '1500', '750', '3.9', '100', '10', '12');
+insert into recommendedNutrientIntake values('65', 'M', '2000', '0', '0', '25', '55', '0', '0', '0', '0', '700', '1300', '700', '3.9', '100', '15', '12');
+insert into recommendedNutrientIntake values('75', 'M', '2000', '0', '0', '25', '55', '0', '0', '0', '0', '700', '1100', '700', '3.9', '100', '15', '12');
+
+
+insert into recommendedNutrientIntake values('0', 'F', '550', '60', '0', '0', '10', '25', '0', '0', '0', '210', '120', '350', '0.4', '35', '5', '3');
+insert into recommendedNutrientIntake values('1', 'F', '1000', '0', '0', '10', '15', '0', '0', '0', '0', '500', '900', '300', '1.5', '35', '5', '5');
+insert into recommendedNutrientIntake values('3', 'F', '1400', '0', '0', '15', '20', '0', '0', '0', '0', '600', '1100', '350', '1.8', '40', '5', '6');
+insert into recommendedNutrientIntake values('6', 'F', '1500', '0', '0', '20', '25', '0', '0', '0', '0', '700', '1200', '400', '2.2', '60', '5', '7');
+insert into recommendedNutrientIntake values('9', 'F', '1800', '0', '0', '20', '40', '0', '0', '0', '0', '800', '1400', '550', '2.8', '80', '5', '9');
+insert into recommendedNutrientIntake values('12', 'F', '2000', '0', '0', '20', '50', '0', '0', '0', '0', '900', '1500', '650', '3.7', '100', '10', '10');
+insert into recommendedNutrientIntake values('15', 'F', '2000', '0', '0', '20', '50', '0', '0', '0', '0', '800', '1500', '600', '3.8', '95', '10', '11');
+insert into recommendedNutrientIntake values('19', 'F', '2100', '0', '0', '20', '55', '0', '0', '0', '0', '700', '1500', '650', '3.8', '100', '10', '12');
+insert into recommendedNutrientIntake values('30', 'F', '1900', '0', '0', '20', '50', '0', '0', '0', '0', '700', '1500', '650', '3.8', '100', '10', '12');
+insert into recommendedNutrientIntake values('50', 'F', '1800', '0', '0', '20', '50', '0', '0', '0', '0', '800', '1500', '600', '3.8', '100', '10', '12');
+insert into recommendedNutrientIntake values('65', 'F', '1600', '0', '0', '20', '45', '0', '0', '0', '0', '800', '1300', '550', '3.8', '100', '15', '12');
+insert into recommendedNutrientIntake values('75', 'F', '1600', '0', '0', '20', '45', '0', '0', '0', '0', '800', '1100', '550', '3.8', '100', '15', '12');
+
+insert into excludedFood values('cjfwoqkr0105@naver.com', '우유');
+
+insert into excludedRecipe values('cjfwoqkr0105@naver.com', '몬테크리스토');

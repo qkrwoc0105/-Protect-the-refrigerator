@@ -84,5 +84,11 @@ Rasberry Pi 카메라로 냉장고 내부의 사진을 찍어 Pytorch와 Yolo v3
 
 
 
+**참고 자료**
 
+* yolo v3 : https://pjreddie.com/darknet/yolo/
+* 라벨이미지 : https://github.com/tzutalin/labelImg
+* 만개의 레시피 : https://www.10000recipe.com/index.html
+* USDA : https://www.usda.gov/
+* 식품의약품안전처, 대한민국 식품영양성분 통합 데이터베이스 : http://www.foodsafetykorea.go.kr/fcdb/
 

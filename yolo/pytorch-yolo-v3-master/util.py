@@ -78,7 +78,7 @@ def predict_transform(prediction, inp_dim, anchors, num_classes, CUDA = True):
     return prediction
 
 def load_classes(namesfile):
-    fp = open(namesfile, "r")
+    fp = open(namesfile, "r", encoding = 'utf-8')
     names = fp.read().split("\n")[:-1]
     return names
 

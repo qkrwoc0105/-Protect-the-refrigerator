@@ -18,6 +18,6 @@ https://git-lfs.github.com/ 이곳에 접속하여 git extension을 받아줍니
 압축을 풀고 install.sh를 실행합니다.
 레포에 가서 git lfs install 을 하여 줍니다.
 git lfs track "yolo\pytorch-yolo-v3-master\yolov3.weights"
-git add .
+git add *
 git commit -m "test"
 git push

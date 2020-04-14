@@ -2,8 +2,7 @@
  냉장고 테이블과 라즈베리파이 테이블 합치면서
 	냉장고 번호 속성 삭제 및 소유에 라즈베리파이 번호 사용
  boolean대신 0,1만 되는 tinyint 사용
- date는 ccyy-mm-dd, time은 hh:mm:ss 포맷의 속성
- 촬영된 식품의 유통기한은 처음에는 식품 정보의 유통기한이며 수정될 수 있기에 따로 저장
+촬영된 식품의 유통기한은 현재시각 + 식품 테이블의 유통기한을 저장
  레시피 활용 안할시 recipe 테이블 아래쪽 테이블들 사용안함
 
 create database capstone;
@@ -15,7 +14,7 @@ use pytest;
 create table memberInfo(
 	email varchar(50) not null,
 	memberPW varchar(50),
-	birth date,
+	birth varchar(50),
 	gender char(1),
 	passedAlarm tinyint,
 	imminentAlarm tinyint,
@@ -28,8 +27,7 @@ create table memberInfo(
 	recipeNormal tinyint,
 	recipeHard tinyint,
 	recipeTime time,
-	CONSTRAINT PK_memberInfo PRIMARY KEY (email),
-	CONSTRAINT CHK_memberInfo_gender CHECK ('gender' IN ('M','F'))
+	CONSTRAINT PK_memberInfo PRIMARY KEY (email)
 );
 
 create table refrigerator(
@@ -43,31 +41,26 @@ create table refrigerator(
 create table possession(
 	email varchar(50) not null,
 	raspberryPiID varchar(50) not null,
-	CONSTRAINT PK_possession PRIMARY KEY (email, raspberryPiID),
-	CONSTRAINT FK_possession_email FOREIGN KEY (email) REFERENCES memberInfo(email),
-	CONSTRAINT FK_possession_raspberryPiID FOREIGN KEY (raspberryPiID) REFERENCES refrigerator(raspberryPiID)
+	CONSTRAINT PK_possession PRIMARY KEY (email, raspberryPiID)
 );
 
 create table camera(
 	cameraID varchar(50) not null,
 	raspberryPiID varchar(50) not null,
-	server varchar(50),
-	CONSTRAINT PK_camera PRIMARY KEY (cameraID),
-	CONSTRAINT FK_camera_raspberryPiID FOREIGN KEY (raspberryPiID) REFERENCES refrigerator(raspberryPiID)
+	CONSTRAINT PK_camera PRIMARY KEY (cameraID)
 );
 
 create table photo(
 	photoID varchar(50) not null,
+	cameraID varchar(50) not null,
 	data blob,
 	analyzedData blob,
-	cameraID varchar(50) not null,
-	CONSTRAINT PK_photo PRIMARY KEY (photoID),
-	CONSTRAINT FK_photo_cameraID FOREIGN KEY (cameraID) REFERENCES camera(cameraID)
+	CONSTRAINT PK_photo PRIMARY KEY (photoID)
 );
 
 create table food(
 	foodName varchar(50) not null,
-	shelfLife varchar(50),
+	shelfLife int,
 	calorie int,
 	carbohydrate float,
 	sugar float,
@@ -89,20 +82,21 @@ create table food(
 
 create table photographedFood(
 	photoID varchar(50) not null,
+	count int not null,
 	foodName varchar(50) not null,
-	shelfLife varchar(50),
+	shelfLife int,
 	inday varchar(50),
-	outday varchar(50),
-	CONSTRAINT PK_photographedFood PRIMARY KEY (photoID, foodName),
-	CONSTRAINT FK_photographedFood_photoID FOREIGN KEY (photoID) REFERENCES photo(photoID),
-	CONSTRAINT FK_photographedFood_foodName FOREIGN KEY (foodName) REFERENCES food(foodName)
+	x1 int,
+	x2 int,
+	y1 int,
+	y2 int,
+	CONSTRAINT PK_photographedFood PRIMARY KEY (photoID, count)
 );
 
 create table recipe(
 	recipeName varchar(50) not null,
-	data blob,
-	process varchar(50),
-	recipeTime time,
+	process varchar(1000),
+	recipeTime varchar(50),
 	difficulty varchar(50),
 	calorie int,
 	carbohydrate float,
@@ -120,16 +114,15 @@ create table recipe(
 	vitaminC float,
 	vitaminD float,
 	vitaminE float,
-	CONSTRAINT PK_recipe PRIMARY KEY (recipeName),
-	CONSTRAINT CHK_recipe_difficulty CHECK ('difficulty' IN ('easy', 'normal', 'hard'))
+	data blob,
+	CONSTRAINT PK_recipe PRIMARY KEY (recipeName)
 );
 
 create table ingredients(
 	recipeName varchar(50) not null,
 	foodName varchar(50) not null,
-	CONSTRAINT PK_ingredients PRIMARY KEY (recipeName, foodName),
-	CONSTRAINT FK_ingredients_recipeName FOREIGN KEY (recipeName) REFERENCES recipe(recipeName),
-	CONSTRAINT FK_ingredients_foodName FOREIGN KEY (foodName) REFERENCES food(foodName)
+	meterage varchar(50),
+	CONSTRAINT PK_ingredients PRIMARY KEY (recipeName, foodName)
 );
 
 create table recommendedNutrientIntake(
@@ -137,9 +130,12 @@ create table recommendedNutrientIntake(
 	gender char(1),
 	calorie int,
 	carbohydrate float,
+	sugar float,
 	dietaryFiber float,
 	protein float,
 	fat float,
+	saturatedFat float,
+	transFat float,
 	cholesterol float,
 	calcium float,
 	sodium float,
@@ -148,22 +144,28 @@ create table recommendedNutrientIntake(
 	vitaminC float,
 	vitaminD float,
 	vitaminE float,
-	CONSTRAINT PK_recommendedNutrientIntake PRIMARY KEY (age, gender),
-	CONSTRAINT CHK_recommendedNutrientIntake_gender CHECK ('gender' IN ('M','F'))
+	CONSTRAINT PK_recommendedNutrientIntake PRIMARY KEY (age, gender)
 );
 
 create table excludedFood(
 	email varchar(50) not null,
 	foodName varchar(50) not null,
-	CONSTRAINT PK_excludedFood PRIMARY KEY (email, foodName),
-	CONSTRAINT FK_excludedFood_email FOREIGN KEY (email) REFERENCES memberInfo(email),
-	CONSTRAINT FK_excludedFood_foodName FOREIGN KEY (foodName) REFERENCES food(foodName)
+	CONSTRAINT PK_excludedFood PRIMARY KEY (email, foodName)
 );
 
 create table excludedRecipe(
 	email varchar(50) not null,
 	recipeName varchar(50) not null,
-	CONSTRAINT PK_excludedRecipe PRIMARY KEY (email, recipeName),
-	CONSTRAINT FK_excludedRecipe_email FOREIGN KEY (email) REFERENCES memberInfo(email),
-	CONSTRAINT FK_excludedRecipe_recipeName FOREIGN KEY (recipeName) REFERENCES recipe(recipeName)
+	CONSTRAINT PK_excludedRecipe PRIMARY KEY (email, recipeName)
+);
+
+create table eatenFood(
+	photoID varchar(50) not null,
+	foodName varchar(50) not null,
+	CONSTRAINT PK_eatenFood PRIMARY KEY (photoID, foodName)
+);
+
+create table images(
+	num int auto_increment primary key,
+	data blob
 );
