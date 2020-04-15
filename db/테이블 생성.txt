@@ -165,6 +165,20 @@ create table eatenFood(
 	CONSTRAINT PK_eatenFood PRIMARY KEY (photoID, foodName)
 );
 
+create table authenMail(
+	email varchar(50) not null,
+	sendTime varchar(50) not null,
+	authenNum int,
+	CONSTRAINT PK_authenMail PRIMARY KEY (email, sendTime)
+);
+
+create table recommendMail(
+	email varchar(50) not null,
+	sendTime varchar(50) not null,
+	recipeName varchar(50),
+	CONSTRAINT PK_eatenFood PRIMARY KEY (email, sendTime)
+);
+
 create table images(
 	num int auto_increment primary key,
 	data blob
