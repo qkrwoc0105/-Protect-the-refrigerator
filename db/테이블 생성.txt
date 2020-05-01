@@ -4,6 +4,8 @@
  boolean대신 0,1만 되는 tinyint 사용
 촬영된 식품의 유통기한은 현재시각 + 식품 테이블의 유통기한을 저장
  레시피 활용 안할시 recipe 테이블 아래쪽 테이블들 사용안함
+gender 는 'M', 'F'만
+difficulty는 easy, normal, hard
 
 create database capstone;
 use capstone;
@@ -179,7 +181,23 @@ create table recommendMail(
 	CONSTRAINT PK_eatenFood PRIMARY KEY (email, sendTime)
 );
 
+create table shelfLifeMail(
+	email varchar(50) not null,
+	foodName varchar(50) not null,
+	shelfLife int,
+	inday varchar(50)
+	CONSTRAINT PK_shelfLifeMail PRIMARY KEY (email, sendTime)
+);
+
 create table images(
 	num int auto_increment primary key,
 	data blob
+);
+
+create table user(
+	userID varchar(50),
+	userPassword varchar(50),
+	userEmail varchar(50),
+	userEmailHash varchar(50),
+	userEmailChecked varchar(50)
 );
