@@ -97,26 +97,12 @@ create table photographedFood(
 
 create table recipe(
 	recipeName varchar(50) not null,
+	data longblob,
 	process varchar(1000),
 	recipeTime varchar(50),
 	difficulty varchar(50),
-	calorie int,
-	carbohydrate float,
-	sugar float,
-	dietaryFiber float,
-	protein float,
-	fat float,
-	saturatedFat float,
-	transFat float,
-	cholesterol float,
-	calcium float,
-	sodium float,
-	vitaminA float,
-	vitaminB float,
-	vitaminC float,
-	vitaminD float,
-	vitaminE float,
-	data blob,
+	Classification varchar(50),
+	method varchar(50),
 	CONSTRAINT PK_recipe PRIMARY KEY (recipeName)
 );
 
@@ -155,9 +141,10 @@ create table excludedFood(
 	CONSTRAINT PK_excludedFood PRIMARY KEY (email, foodName)
 );
 
-create table excludedRecipe(
+create table recipeScore(
 	email varchar(50) not null,
 	recipeName varchar(50) not null,
+	score int,
 	CONSTRAINT PK_excludedRecipe PRIMARY KEY (email, recipeName)
 );
 
