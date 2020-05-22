@@ -69,10 +69,10 @@ def arg_parse():
     parser.add_argument("--nms_thresh", dest = "nms_thresh", help = "NMS Threshhold", default = 0.4)
     parser.add_argument("--cfg", dest = 'cfgfile', help = 
                         "Config file",
-                        default = "cfg/yolov3plate.cfg", type = str)
+                        default = "cfg/yolov3.cfg", type = str)
     parser.add_argument("--weights", dest = 'weightsfile', help = 
                         "weightsfile",
-                        default = "yolov3.weights", type = str)
+                        default = "cfg/yolov3_last.weights", type = str)
     parser.add_argument("--reso", dest = 'reso', help = 
                         "Input resolution of the network. Increase to increase accuracy. Decrease to increase speed",
                         default = "416", type = str)
@@ -118,8 +118,8 @@ if __name__ ==  '__main__':
 
     CUDA = torch.cuda.is_available()
 
-    num_classes = 2
-    classes = load_classes('data/plate/plate.names')
+    num_classes = 10
+    classes = load_classes('data/plate/classes.names')
 
     #Set up the neural network
     print("Loading network.....")
@@ -349,12 +349,11 @@ if __name__ ==  '__main__':
         conn.commit()
         conn.close()
 
-        if shelfLife < 3 :
-            color = orange_color
-        elif diff >= shelfLife - 3 :
-            color = orange_color
-        elif diff > shelfLife :
+        #유통기한에 따른 색 변경
+        if diff > shelfLife :
             color = red_color
+        elif (diff >= shelfLife - 3) or (shelfLife < 3) :
+            color = orange_color
         else :
             color = green_color
         
@@ -373,17 +372,26 @@ if __name__ ==  '__main__':
     sql = "select photoID from photo where cameraID=%s"
     curs.execute(sql, args.cameraID)
     rows = curs.fetchall()
+    
+    now = args.photoID
+    now_split = now.split('_')
+    now_time = datetime(int(now_split[0]), int(now_split[1]), int(now_split[2]), int(now_split[3]), int(now_split[4]), int(now_split[5]))
+    
     pre = ''
     if len(rows) != 0:
         pre = rows[0][0];       
-        pre_split = pre.split('_')            
+        pre_split = pre.split('_') 
+        pre_time = datetime(int(pre_split[0]), int(pre_split[1]), int(pre_split[2]), int(pre_split[3]), int(pre_split[4]), int(pre_split[5]))
         for row in rows :    
             row_split = row[0].split('_')
-            for i in range(0, len(pre_split)) :
-                if(int(pre_split[i]) < int(row_split[i])) :
-                    pre = row[0]
-                    pre_split = pre.split('_')
-                    break;
+            row_time = datetime(int(row_split[0]), int(row_split[1]), int(row_split[2]), int(row_split[3]), int(row_split[4]), int(row_split[5]))
+            if now_time == row_time:
+                pass
+            elif pre_time < row_time :
+                pre = row[0]
+                pre_split = pre.split('_')
+                pre_time = datetime(int(pre_split[0]), int(pre_split[1]), int(pre_split[2]), int(pre_split[3]), int(pre_split[4]), int(pre_split[5]))
+    print(pre)
 
     list(map(lambda x: write(x, im_batches, orig_ims, pre), output))
     

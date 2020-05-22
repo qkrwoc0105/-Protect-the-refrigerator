@@ -55,8 +55,8 @@ create table camera(
 create table photo(
 	photoID varchar(50) not null,
 	cameraID varchar(50) not null,
-	data blob,
-	analyzedData blob,
+	data longblob,
+	analyzedData longblob,
 	CONSTRAINT PK_photo PRIMARY KEY (photoID)
 );
 
@@ -178,7 +178,7 @@ create table shelfLifeMail(
 
 create table images(
 	num int auto_increment primary key,
-	data blob
+	data longblob
 );
 
 create table user(
@@ -187,4 +187,10 @@ create table user(
 	userEmail varchar(50),
 	userEmailHash varchar(50),
 	userEmailChecked varchar(50)
+);
+
+create table recommendRecipe(
+	email varchar(50) not null,
+	recipeName varchar(50) not null,
+	CONSTRAINT PK_recommendRecipe PRIMARY KEY (email, recipeName)
 );

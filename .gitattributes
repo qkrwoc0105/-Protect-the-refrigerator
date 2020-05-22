@@ -1,1 +1,2 @@
 yolo/pytorch-yolo-v3-master/yolov3.weights filter=lfs diff=lfs merge=lfs -text
+yolo/pytorch-yolo-v3-master/cfg/yolov3_last.weights filter=lfs diff=lfs merge=lfs -text
