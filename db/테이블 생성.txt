@@ -16,19 +16,7 @@ use pytest;
 create table memberInfo(
 	email varchar(50) not null,
 	memberPW varchar(50),
-	birth varchar(50),
-	gender char(1),
-	passedAlarm tinyint,
-	imminentAlarm tinyint,
-	mealtimeA time,
-	mealtimeB time,
-	mealtimeC time,
-	mealtimeD time,
-	mealtimeE time,
-	recipeEasy tinyint,
-	recipeNormal tinyint,
-	recipeHard tinyint,
-	recipeTime time,
+	name varchar(50),
 	CONSTRAINT PK_memberInfo PRIMARY KEY (email)
 );
 
@@ -63,22 +51,6 @@ create table photo(
 create table food(
 	foodName varchar(50) not null,
 	shelfLife int,
-	calorie int,
-	carbohydrate float,
-	sugar float,
-	dietaryFiber float,
-	protein float,
-	fat float,
-	saturatedFat float,
-	transFat float,
-	cholesterol float,
-	calcium float,
-	sodium float,
-	vitaminA float,
-	vitaminB float,
-	vitaminC float,
-	vitaminD float,
-	vitaminE float,
 	CONSTRAINT PK_food PRIMARY KEY (foodName)
 );
 
@@ -111,28 +83,6 @@ create table ingredients(
 	foodName varchar(50) not null,
 	meterage varchar(50),
 	CONSTRAINT PK_ingredients PRIMARY KEY (recipeName, foodName)
-);
-
-create table recommendedNutrientIntake(
-	age int,
-	gender char(1),
-	calorie int,
-	carbohydrate float,
-	sugar float,
-	dietaryFiber float,
-	protein float,
-	fat float,
-	saturatedFat float,
-	transFat float,
-	cholesterol float,
-	calcium float,
-	sodium float,
-	vitaminA float,
-	vitaminB float,
-	vitaminC float,
-	vitaminD float,
-	vitaminE float,
-	CONSTRAINT PK_recommendedNutrientIntake PRIMARY KEY (age, gender)
 );
 
 create table excludedFood(
