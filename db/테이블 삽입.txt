@@ -23,7 +23,7 @@ mysql CHECK 작동 안한다고 하여 제약조건들 삭제
 
 
 
-insert into memberInfo values('cjfwoqkr0105@naver.com', 'qwer1234', '박재철');
+insert into members (userId, password, email) values('qkrwocjf', 'qwer1234', 'cjfwoqkr0105@naver.com');
 
 insert into refrigerator values('applemango', 'applemango!1', '졸프용 냉장고', '한성대');
 
@@ -109,3 +109,6 @@ insert into recommendedNutrientIntake values('75', 'F', '1600', '0', '0', '20', 
 insert into excludedFood values('cjfwoqkr0105@naver.com', '우유');
 
 insert into excludedRecipe values('cjfwoqkr0105@naver.com', '몬테크리스토');
+
+insert into recommendRecipe values('cjfwoqkr0105@naver.com', '동파육');
+insert into recommendRecipe values('cjfwoqkr0105@naver.com', '삼계탕');

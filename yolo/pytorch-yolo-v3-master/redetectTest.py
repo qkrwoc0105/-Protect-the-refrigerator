@@ -9,36 +9,21 @@ from glob import glob
 import subprocess
 import sys
 
-conn = pymysql.connect(host='13.125.102.154', user='hello', password='Csedbadmin!1', db='pytest')
-curs = conn.cursor()
-
-engine = create_engine('mysql+pymysql://hello:Csedbadmin!1@13.125.102.154/pytest', echo = False)
-
-raspberryPiID = 'applemango'
-cameraID = 'camera1'
-photoID = '2020_5_27_0_4_26'
-recvData = raspberryPiID + ' ' + cameraID + ' ' + photoID
 dataSplit = recvData.split()
-
 raspberryPiID = dataSplit[0]
 cameraID = dataSplit[1]
 photoID = dataSplit[2]
 
-img_df = pd.read_sql(sql="select * from photo where photoID = '" + photoID + "'", con=engine)
+num_df = pd.read_sql(sql="select max(num) from images", con=engine)
+num = num_df.values[0][0]
+
+img_df = pd.read_sql(sql="select * from images where num = " + str(num), con=engine)
 img_str = img_df['data'].values[0]
 img = base64.decodebytes(img_str)
 im = Image.open(BytesIO(img))
 
 tempname = 'temp.jpg'
 im.save('imgs/' + tempname)
-
-sql = "delete from photographedFood where photoID = '" + photoID + "'"
-curs.execute(sql)
-conn.commit()
-
-sql = "delete from photo where photoID = '" + photoID + "'"
-curs.execute(sql)
-conn.commit()
 
 filename = glob('detectplate.py')
 subprocess.call(['python', filename, '--images', 'imgs/' + tempname, '--det', 'det', '--photoID', photoID, '--cameraID', cameraID])
@@ -51,6 +36,3 @@ img_str2 = base64.b64encode(buffer.getvalue())
 
 img_df = pd.DataFrame({'photoID':[photoID], 'data':[img_str], 'analyzedData':[img_str2], 'cameraID':[cameraID]})
 img_df.to_sql('photo', con=engine, if_exists='append', index=False)
-
-sys.exit()
-conn.close()
