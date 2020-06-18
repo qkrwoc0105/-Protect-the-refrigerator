@@ -33,7 +33,7 @@ while True:
             camera.resolution=(256, 192)
             camera.capture(filename)
             
-        engine = create_engine('mysql+pymysql://hello:Csedbadmin!1@13.125.102.154/pytest', echo = False)
+        engine = create_engine('mysql+pymysql://hello:Csedbadmin!1@13.125.151.180/pytest', echo = False)
         buffer = BytesIO()
         im = Image.open(filename)
 

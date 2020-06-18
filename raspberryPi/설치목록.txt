@@ -21,3 +21,4 @@ sudo apt install python3-pandas
 sudo apt install python3-sqlalchemy
 sudo pip install python3-rpi.gpio
 sudo pip install python3-picamera
+sudo pip install socket

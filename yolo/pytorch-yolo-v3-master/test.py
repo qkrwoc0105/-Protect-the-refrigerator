@@ -9,14 +9,14 @@ from glob import glob
 import subprocess
 import sys
 
-conn = pymysql.connect(host='13.125.102.154', user='hello', password='Csedbadmin!1', db='pytest')
+conn = pymysql.connect(host='13.125.151.180', user='hello', password='Csedbadmin!1', db='pytest')
 curs = conn.cursor()
 
-engine = create_engine('mysql+pymysql://hello:Csedbadmin!1@13.125.102.154/pytest', echo = False)
+engine = create_engine('mysql+pymysql://hello:Csedbadmin!1@13.125.151.180/pytest', echo = False)
 
 raspberryPiID = 'applemango'
 cameraID = 'camera1'
-photoID = '2020_5_27_0_4_26'
+photoID = '2020_6_15_5_50_3'
 recvData = raspberryPiID + ' ' + cameraID + ' ' + photoID
 dataSplit = recvData.split()
 

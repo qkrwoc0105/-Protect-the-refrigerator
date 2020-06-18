@@ -18,7 +18,7 @@ def sendEmail(title, text, sendID = 'cjfwoqkr0105@gmail.com'):
     msg['To'] = sendID
     smtp.sendmail(googleID, sendID, msg.as_string())
 
-conn = pymysql.connect(host='13.125.102.154', user='hello', password='Csedbadmin!1', db='pytest')
+conn = pymysql.connect(host='13.125.151.180', user='hello', password='Csedbadmin!1', db='pytest')
 curs = conn.cursor()
 
 preTime = datetime.now()

@@ -1,2 +1,5 @@
 yolo/pytorch-yolo-v3-master/yolov3.weights filter=lfs diff=lfs merge=lfs -text
 yolo/pytorch-yolo-v3-master/cfg/yolov3_last.weights filter=lfs diff=lfs merge=lfs -text
+yolo/pytorch-yolo-v3-master/cfg/yolov3_last_v2.weights filter=lfs diff=lfs merge=lfs -text
+yolo/pytorch-yolo-v3-master/cfg/yolov3_last20400.weights filter=lfs diff=lfs merge=lfs -text
+/document/홍보영상.mp4 filter=lfs diff=lfs merge=lfs -text

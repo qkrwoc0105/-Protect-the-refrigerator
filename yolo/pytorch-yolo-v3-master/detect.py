@@ -295,14 +295,6 @@ if __name__ ==  '__main__':
         cv2.rectangle(img, c1, c2,color, -1)
         cv2.putText(img, label, (c1[0], c1[1] + t_size[1] + 4), cv2.FONT_HERSHEY_PLAIN, 1, [225,255,255], 1)
         
-        print(type(x))
-        print(type(c1), c1)
-        print(type(c1[0]), c1[0])
-        x1 = c1[0].numpy()
-        print(type(x1), x1)
-        x = int(x1)
-        print(type(x), x)
-        
         return img
     
             

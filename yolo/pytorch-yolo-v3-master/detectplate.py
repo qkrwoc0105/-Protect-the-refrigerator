@@ -69,10 +69,10 @@ def arg_parse():
     parser.add_argument("--nms_thresh", dest = "nms_thresh", help = "NMS Threshhold", default = 0.4)
     parser.add_argument("--cfg", dest = 'cfgfile', help = 
                         "Config file",
-                        default = "cfg/yolov3.cfg", type = str)
+                        default = "cfg/yolov3_using.cfg", type = str)
     parser.add_argument("--weights", dest = 'weightsfile', help = 
                         "weightsfile",
-                        default = "cfg/yolov3_last.weights", type = str)
+                        default = "cfg/yolov3_last_v2.weights", type = str)
     parser.add_argument("--reso", dest = 'reso', help = 
                         "Input resolution of the network. Increase to increase accuracy. Decrease to increase speed",
                         default = "416", type = str)
@@ -309,10 +309,14 @@ if __name__ ==  '__main__':
         x2 = int(c2[0].numpy())
         y2 = int(c2[1].numpy())
         
-        conn = pymysql.connect(host='13.125.102.154', user='hello', password='Csedbadmin!1', db='pytest')
+        conn = pymysql.connect(host='13.125.151.180', user='hello', password='Csedbadmin!1', db='pytest')
         curs = conn.cursor()
         
         now = args.photoID
+        if now.find('applemango') != -1:
+            now_split = now.split('applemango')
+            now = now_split[0]
+        print(now)
         now_split = now.split('_')
         now_time = datetime(int(now_split[0]), int(now_split[1]), int(now_split[2]), int(now_split[3]), int(now_split[4]), int(now_split[5]))
         
@@ -320,13 +324,19 @@ if __name__ ==  '__main__':
         curs.execute(sql, pre)
         rows = curs.fetchall()
         
-        #row 0:photoId 1:count 2:foodName 3:shelfLife 4:inday 5:x1 6:x2 7:y1 8:y2
+        sql = "select * from photographedFood where photoID = %s"
+        curs.execute(sql, now)
+        nows = curs.fetchall()
+    
         check = True
         shelfLife, diff = 0, 0
+        
+        #row 0:photoId 1:count 2:foodName 3:shelfLife 4:inday 5:x1 6:x2 7:y1 8:y2
         for row in rows : #이전 사진과 같은 좌표에 식품이 있는지 확인
             if (x1 == row[5]) and (x2 == row[6]) and (y1 == row[7]) and (y2 == row[8]) :
-                sql = "insert into photographedFood(photoID, count, foodName, shelfLife, inday, x1, x2, y1, y2) values (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
-                curs.execute(sql, (now, write.counter, row[2], row[3], row[4], row[5], row[6], row[7], row[8]))
+                if nows[0][0] == '':
+                    sql = "insert into photographedFood(photoID, count, foodName, shelfLife, inday, x1, x2, y1, y2) values (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
+                    curs.execute(sql, (now, write.counter, row[2], row[3], row[4], row[5], row[6], row[7], row[8]))
                 
                 shelfLife = row[3]
                 inday_split = row[4].split('_')
@@ -334,21 +344,26 @@ if __name__ ==  '__main__':
                 diff = (now_time - in_time).days
                 check = False
                 break;            
-                
+        
         #같은 좌표에 식품이 없는 경우
-        if check == True:
-            sql = "select shelfLife from food where foodName = %s"
-            curs.execute(sql, label)
-            rows = curs.fetchall()
-    
-            shelfLife = rows[0][0]
-            
-            sql = "insert into photographedFood(photoID, count, foodName, shelfLife, inday, x1, x2, y1, y2) values (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
-            curs.execute(sql, (now, write.counter, label, shelfLife, now, x1, x2, y1, y2))
+        if check == True and pre == '':
+            if nows[0][0] == '':
+                sql = "select shelfLife from food where foodName = %s"
+                curs.execute(sql, label)
+                rows = curs.fetchall()
+        
+                shelfLife = rows[0][0]
+                sql = "insert into photographedFood(photoID, count, foodName, shelfLife, inday, x1, x2, y1, y2) values (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
+                curs.execute(sql, (now, write.counter, label, shelfLife, now, x1, x2, y1, y2))
+                conn.commit()
+                conn.close()
+            else:
+                sql = "select shelfLife from photographedFood where photoID = %s"
+                curs.execute(sql, now)
+                shelfs = curs.fetchall()
+                selfLife = shelfs[0][0]
 
-        conn.commit()
-        conn.close()
-
+        print(diff, shelfLife)
         #유통기한에 따른 색 변경
         if diff > shelfLife :
             color = red_color
@@ -366,55 +381,16 @@ if __name__ ==  '__main__':
         return img
     
     #해당하는 카메라로 찍은 가장 최근 사진
-    conn = pymysql.connect(host='13.125.102.154', user='hello', password='Csedbadmin!1', db='pytest')
+    conn = pymysql.connect(host='13.125.151.180', user='hello', password='Csedbadmin!1', db='pytest')
     curs = conn.cursor()
-    
-    sql = "select photoID from photo where cameraID=%s"
+    sql = "select photoID from photo where cameraID = %s order by photoID desc limit 1"
     curs.execute(sql, args.cameraID)
     rows = curs.fetchall()
     
-    now = args.photoID
-    now_split = now.split('_')
-    now_time = datetime(int(now_split[0]), int(now_split[1]), int(now_split[2]), int(now_split[3]), int(now_split[4]), int(now_split[5]))
-    
-    pre = ''
-    if len(rows) != 0:
-        pre = rows[0][0];       
-        pre_split = pre.split('_') 
-        pre_time = datetime(int(pre_split[0]), int(pre_split[1]), int(pre_split[2]), int(pre_split[3]), int(pre_split[4]), int(pre_split[5]))
-        for row in rows :    
-            row_split = row[0].split('_')
-            row_time = datetime(int(row_split[0]), int(row_split[1]), int(row_split[2]), int(row_split[3]), int(row_split[4]), int(row_split[5]))
-            if now_time == row_time:
-                pass
-            elif pre_time < row_time :
-                pre = row[0]
-                pre_split = pre.split('_')
-                pre_time = datetime(int(pre_split[0]), int(pre_split[1]), int(pre_split[2]), int(pre_split[3]), int(pre_split[4]), int(pre_split[5]))
+    pre = rows[0][0]
     print(pre)
 
     list(map(lambda x: write(x, im_batches, orig_ims, pre), output))
-    
-    #가장 최근 사진과 지금 사진을 비교하여 없어진 식품을 eatenFood테이블로
-    if pre != '':
-        sql = "select * from photographedFood where photoID = %s"
-        curs.execute(sql, pre)
-        pre_rows = curs.fetchall()
-        
-        sql = "select * from photographedFood where photoID = %s"
-        curs.execute(sql, args.photoID)
-        now_rows = curs.fetchall()
-        
-        for pre_row in pre_rows :
-            check = False
-            for now_row in now_rows :
-                if (pre_row[5] == now_row[5]) and (pre_row[6] == now_row[6]) and (pre_row[7] == now_row[7]) and (pre_row[8] == now_row[8]) :
-                    check = True
-                    break;
-            if check == False :
-                sql = "insert into eatenFood(photoID, foodName) values (%s, %s)"
-                curs.execute(sql, (args.photoID, pre_row[2]))
-                conn.commit()
         
     conn.close()
       

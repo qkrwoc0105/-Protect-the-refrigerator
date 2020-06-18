@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd">
+
+	<bean id="dataSource"
+		class="org.apache.commons.dbcp2.BasicDataSource"
+		destroy-method="close">
+		<property name="driverClassName"
+			value="${jdbc.driverClassName}" />
+		<property name="url" value="${jdbc.url}" />
+		<property name="username" value="${jdbc.username}" />
+		<property name="password" value="${jdbc.password}" />
+	</bean>
+
+	<!-- basicDatasource라고하는 bean을 등록해주고 spring containerdpdmlgotj 만들어주고 drivername, 
+		url..등은 properties에 있다 -->
+		
+	<context:property-placeholder location="/WEB-INF/props/jdbc.properties" />
+	<!-- jdbc.properties를 읽어들어서 placeholder부분을 채워나간다=>우리가 만들어야하는 부분=>hellospringMVC의 /WEB-INF/props를 카피 -->
+	
+	<context:annotation-config></context:annotation-config>
+	<context:component-scan base-package="kr.ac.hansung.cse.dao"></context:component-scan>
+
+</beans>

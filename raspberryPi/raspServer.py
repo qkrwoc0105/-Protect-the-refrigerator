@@ -15,7 +15,7 @@ KEY = 4;
 g.setup(KEY, g.IN)
 
 s = socket.socket()         
-host = '192.168.137.213'
+host = '192.168.137.228'
 port = 1234               
 s.bind((host, port))       
 s.listen(5)
